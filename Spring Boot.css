@@ -1,0 +1,342 @@
+1. 🌱 Spring Boot là gì?
+
+Spring Boot là framework Java giúp bạn:
+
+🚀 Tạo ứng dụng nhanh mà không cần cấu hình rườm rà.
+
+🧩 Tích hợp sẵn các thư viện phổ biến (web, security, JPA...).
+
+📦 Chạy độc lập (Tomcat/Jetty tích hợp).
+
+📜 Convention over Configuration – có sẵn cấu hình hợp lý.
+
+❌ Giảm XML config, dùng annotation + Java config.
+
+
+Ví dụ: chỉ với @SpringBootApplication và vài dòng code là chạy được server web
+
+
+Mục tiêu chính của Spring Boot:
+Giảm cấu hình (Configuration): Không cần viết quá nhiều file cấu hình XML như trong Spring truyền thống
+Tự động cấu hình (Auto Configuration): Dựa trên thư viện có trong classpath, Spring Boot sẽ tự đoán và cấu hình các thành phần cần thiết
+Có sẵn server tích hợp: Spring Boot có thể chạy trực tiếp ứng dụng mà không cần deploy vào server ngoài như Tomcat
+Tích hợp dễ dàng với Spring ecosystem: Spring Boot hoạt động mượt mà với Spring MVC, Spring Data, Spring Security, v.v
+
+
+
+A. Cấu trúc dự án & lifecycle
+
+Thư mục chuẩn:
+    src/main/java   → code Java
+    src/main/resources → file cấu hình (application.properties/yml)
+
+
+Annotation khởi động:
+
+@SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan
+
+Main method:
+
+    SpringApplication.run(App.class, args);
+
+B. Controller & Request Handling (trái tim của web app)
+
+Annotation chính:
+
+    @RestController – trả dữ liệu JSON
+
+    @Controller – trả về HTML/JSP/Thymeleaf
+
+    @GetMapping, @PostMapping – định nghĩa endpoint
+
+    @RequestParam, @PathVariable – lấy dữ liệu từ URL/query
+
+    Luồng xử lý: Request → DispatcherServlet → Controller → Service → Repository → DB
+
+
+
+C. Dependency Injection (DI)
+
+    Khái niệm: Spring tự tạo & inject đối tượng vào nơi cần dùng (IoC).
+
+    Annotation chính:
+
+    @Component, @Service, @Repository – khai báo Bean
+
+    @Autowired – tiêm Bean
+
+    Lợi ích: code tách biệt, dễ test, dễ mở rộng.
+
+D. Làm việc với DB (Spring Data JPA)
+
+    Entity: @Entity, @Id, @GeneratedValue
+
+    Repository: extends JpaRepository<Entity, ID>
+
+    Query method:
+
+        List<User> findByName(String name);
+
+    Cấu hình DB trong application.properties.
+
+
+
+ E. Cấu hình & Profiles
+
+application.properties / application.yml – lưu cấu hình.
+
+Profiles (application-dev.properties, application-prod.properties) – đổi cấu hình theo môi trường.
+
+@Value – lấy giá trị từ config.
+
+F. Starter & Dependency Management
+
+Starter là gói tiện ích sẵn sàng dùng (VD: spring-boot-starter-web, spring-boot-starter-data-jpa).
+
+Quản lý dependencies qua Maven/Gradle.
+
+G. Chạy & Deploy
+
+Chạy bằng mvn spring-boot:run hoặc run class main.
+
+Đóng gói .jar rồi chạy java -jar app.jar.
+
+
+
+ 
+📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜
+Ví dụ một ứng dụng Spring Boot đơn giản:
+
+    @SpringBootApplication
+    public class MyApplication {
+        public static void main (String[] args){
+            SpringApplication.run(MyApplication.class, args);
+        }
+    }
+
+@SpringBootApplication là một annotation bao gồm:
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+
+
+🌟 Những tính năng nổi bật của Spring Boot
+1. ⚡ Khởi tạo nhanh & Tích hợp sẵn
+
+Auto Configuration 🛠 – Tự động cấu hình dựa trên thư viện bạn thêm vào.
+
+Starter POMs 📦 – Gói tiện ích có sẵn (web, JPA, security, mail, batch…).
+
+Embedded Server 🌐 – Tích hợp sẵn Tomcat/Jetty/Undertow, chạy app như java -jar.
+
+2. 📜 Giảm cấu hình phức tạp
+
+Ít hoặc không cần XML – gần như tất cả cấu hình dùng annotation & Java config.
+
+Convention over Configuration – Có cấu hình mặc định hợp lý, chỉ chỉnh khi cần.
+
+3. 🔌 Dependency Injection mạnh mẽ
+
+Hỗ trợ đầy đủ DI & IoC của Spring.
+
+Tích hợp annotation như @Component, @Service, @Repository, @Autowired.
+
+4. 🗄 Tích hợp Database dễ dàng
+
+Hỗ trợ Spring Data JPA, JDBC, MyBatis…
+
+Quản lý kết nối DB dễ dàng qua application.properties.
+
+Chạy script SQL tự động khi app start.
+
+5. ⚙️ Profiles & Config linh hoạt
+
+Profiles 🧩 – Tách cấu hình theo môi trường (dev/test/prod).
+
+Hỗ trợ application.properties & application.yml.
+
+Externalized Configuration – dễ đổi config mà không cần build lại app.
+
+6. 📊 Actuator – Giám sát & Quản lý
+
+Spring Boot Actuator 📈 – Cung cấp endpoint để theo dõi sức khỏe ứng dụng, metrics, logs…
+
+Dễ tích hợp với Prometheus, Grafana.
+
+7. 🧪 Testing tiện lợi
+
+Hỗ trợ JUnit, Mockito, Spring Test.
+
+Có annotation như @SpringBootTest để test toàn bộ app.
+
+8. 🚀 Deploy đa dạng
+
+Build thành .jar hoặc .war.
+
+Deploy được trên mọi nền tảng (server vật lý, cloud, container như Docker/Kubernetes).
+
+
+
+Tự động cấu hình (Auto Configuration)
+Spring Boot tự động cấu hình các thành phần của ứng dụng dựa trên thư viện có trong classpath và cấu hình mặc định hợp lý
+Ví dụ:
+Nếu bạn thêm spring-boot-starter-web, Spring Boot sẽ tự động cấu hình Spring MVC và Tomcat
+Nếu có spring-boot-starter-data-jpa, Spring Boot sẽ cấu hình JPA và kết nối cơ sở dữ liệu
+
+
+
+Starter Dependencies
+Spring Boot cung cấp các gói starter để gom nhóm các thư viện thường dùng lại với nhau, ví dụ:
+ 
+
+Starter             	              Chức năng
+spring-boot-starter-web          Phát triển web REST/API với Spring MVC
+spring-boot-starter-data-jpa       Làm việc với JPA và Hibernate
+spring-boot-starter-security        Bảo mật ứng dụng
+spring-boot-starter-test            Viết test đơn vị, mock, integration test
+
+
+Tích hợp server nhúng
+    Spring Boot hỗ trợ server nhúng (embedded) như:
+    Tomcat (mặc định)
+    Jetty
+    Undertow
+ 
+
+Spring Boot Actuator
+Spring Boot Actuator cung cấp nhiều endpoint tiện ích để giám sát và kiểm tra tình trạng hệ thống:
+
+Endpoint            Chức năng
+/actuator/health    Kiểm tra trạng thái hệ thống
+/actuator/metrics   Xem thông tin về CPU, RAM, request
+/actuator/env       Xem các biến môi trường và cấu hình
+/actuator/loggers   Theo dõi cấu hình log hiện tại      
+
+ 
+
+Hỗ trợ cấu hình linh hoạt
+    Spring Boot hỗ trợ 2 định dạng cấu hình:
+    application.properties
+    application.yml
+    Ngoài ra, hỗ trợ nhiều profile môi trường (dev, test, prod) giúp tùy biến cấu hình cho từng môi trường chạy
+    
+
+Tích hợp công cụ test mạnh mẽ
+    Spring Boot tích hợp sẵn các công cụ test như:
+    JUnit
+    Mockito
+    Spring Test
+    TestRestTemplate (test REST API)
+    @SpringBootTest (chạy context đầy đủ)
+    Giúp viết test dễ hơn, nhanh hơn và đáng tin cậy hơn
+
+
+Spring Initializr – Tạo project siêu nhanh
+    Spring Boot cung cấp website https://start.spring.io để:
+    Chọn phiên bản Spring Boot
+    Chọn các starter cần thiết
+    Tạo project và tải về file ZIP
+    Cực kỳ tiện lợi để khởi đầu dự án mới
+
+
+Dễ mở rộng – phù hợp Microservices
+    Spring Boot được thiết kế sẵn để:
+    Tương thích với kiến trúc Microservices
+    Hỗ trợ Docker, cloud (Heroku, AWS, GCP)
+    Dễ tích hợp với Spring Cloud, Kafka, RabbitMQ...    
+  
+    
+
+💾💾💾💾💾💾💾💾💾💾💾💾    
+ CÁC DEPEDENCE TRONG SPRINGBOOT
+
+ 🌐 Spring Web
+
+    Dependency: spring-boot-starter-web
+
+    Dùng cho: Xây dựng ứng dụng web, REST API.
+
+    Bao gồm: Spring MVC, Tomcat (mặc định), Jackson (JSON).
+
+    Ví dụ: @RestController, @GetMapping, @PostMapping.
+
+🗄 Spring Data JPA
+
+    Dependency: spring-boot-starter-data-jpa
+
+    Dùng cho: Kết nối cơ sở dữ liệu, ORM với Hibernate.
+
+    Bao gồm: Hibernate, JPA API.
+
+    Ví dụ: @Entity, @Repository, findAll(), save().
+
+💾 Database Driver
+
+    Ví dụ: mysql-connector-java (MySQL), postgresql (PostgreSQL).
+
+    Dùng cho: Cho phép Spring Boot kết nối trực tiếp đến cơ sở dữ liệu tương ứng.
+
+🔐 Spring Security
+
+    Dependency: spring-boot-starter-security
+
+    Dùng cho: Quản lý xác thực (authentication) và phân quyền (authorization).
+
+    Ví dụ: @EnableWebSecurity, cấu hình UserDetailsService.
+
+📝 Spring Boot DevTools
+
+    Dependency: spring-boot-devtools
+
+    Dùng cho: Hỗ trợ phát triển nhanh: tự động reload khi thay đổi code.
+
+📦 Spring Boot Starter Test
+
+    Dependency: spring-boot-starter-test
+
+    Dùng cho: Viết unit test và integration test.
+
+    Bao gồm: JUnit, Mockito, Spring Test.
+
+
+
+spring-boot-starter-web
+
+    Xây dựng ứng dụng web RESTful với Spring MVC
+
+spring-boot-starter-data-jpa
+
+    Kết nối CSDL và thao tác ORM với JPA + Hibernate
+
+spring-boot-starter-security
+
+    Cung cấp bảo mật (xác thực, phân quyền)
+
+spring-boot-starter-thymeleaf
+
+    Sử dụng Thymeleaf để tạo giao diện HTML
+
+spring-boot-starter-test
+
+    Viết unit test và integration test (JUnit, Mockito, AssertJ)
+
+spring-boot-starter-validation
+
+    Hỗ trợ validation (JSR-380) cho dữ liệu đầu vào
+
+spring-boot-starter-mail
+
+    Gửi email từ ứng dụng
+
+spring-boot-starter-actuator
+
+    Giám sát hệ thống, kiểm tra health, metrics, logs
+
+ 
+
+Quản lý dependency bằng Maven/Gradle
+Với Maven:
+    Bạn khai báo dependencies trong file pom.xml
+Maven sẽ tự động tải các thư viện liên quan về project của bạn
+Với Gradle:
+    Tương tự, nhưng khai báo trong file build.gradle    
