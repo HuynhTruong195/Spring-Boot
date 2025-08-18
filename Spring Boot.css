@@ -663,9 +663,11 @@ Pageable pageable = PageRequest.of(0, 5);
 Page<User> page = userRepository.findByAgeGreaterThan(18, pageable);
 
 // Lấy dữ liệu
-List<User> users = page.getContent();
-int totalPages = page.getTotalPages();
-long totalElements = page.getTotalElements();
+List<User> users = page.getContent();   ->danh sách dữ liệu
+int totalPages = page.getTotalPages();  -> Tổng số trang
+long totalElements = page.getTotalElements(); -> Tổng số phần tử
+boolean hasNext = page.hasNext();       -> Còn trang sau hay không
+
 👉 Pageable sẽ tự động sinh ra SQL có LIMIT và OFFSET.
 
 
@@ -699,3 +701,71 @@ SELECT * FROM users ORDER BY age DESC LIMIT 10 OFFSET 0;
 Page<T>: có đầy đủ info (total elements, total pages, số trang hiện tại, …) → dùng khi bạn cần hiển thị phân trang chuẩn (ví dụ web show tổng số trang).
 
 Slice<T>: chỉ biết có còn trang tiếp theo hay không (hasNext()) → nhẹ hơn, dùng khi chỉ cần load-more (infinite scroll).
+
+
+
+🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠
+DTO Projection và Interface-based Projection
+
+1️⃣ DTO Projection (Class-based Projection)
+Khi bạn chỉ cần một phần dữ liệu của Entity (ví dụ: chỉ cần name và email thay vì toàn bộ User), bạn không nên tải toàn bộ entity. Lúc này, dùng Projection giúp:
+    Truy vấn nhanh hơn
+    Tránh lấy dữ liệu dư thừa
+    Dễ map sang JSON hoặc dữ liệu trả về API
+
+// DTO
+public class UserDTO {
+    private String name;
+    private String email;
+
+    public UserDTO(String name, String email) {  // constructor cần thiết
+        this.name = name;
+        this.email = email;
+    }
+
+    // getter và setter
+}
+
+// Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query("SELECT new com.example.demo.UserDTO(u.name, u.email) FROM User u WHERE u.active = true")
+    List<UserDTO> findActiveUsers();
+}
+
+Giải thích:
+
+new com.example.demo.UserDTO(u.name, u.email) → Spring sẽ gọi constructor của DTO.
+
+Chỉ lấy name và email, không load toàn bộ entity → tiết kiệm tài nguyên.
+
+Hỗ trợ tính năng mạnh mẽ của class (constructor, method, validation...).
+
+
+2️⃣ Interface-based Projection
+Sử dụng interface để “map” dữ liệu từ query trực tiếp vào các getter method.
+Spring Data JPA tự tạo implementation runtime, không cần DTO class thực sự.
+Phù hợp với query đơn giản, không cần logic trong DTO.
+
+Ví dụ:
+    // Projection interface
+    public interface UserNameEmail {
+        String getName();
+        String getEmail();
+    }
+
+    // Repository
+    public interface UserRepository extends JpaRepository<User, Long> {
+
+        List<UserNameEmail> findByActiveTrue();
+    }
+
+    LƯU Ý: Tên getter phải trùng với tên field trong Entity.
+
+    Giải thích:
+
+Spring tự generate class ẩn implementing UserNameEmail.
+
+Khi query findByActiveTrue() → trả về list các object có getName() và getEmail().
+
+Không cần constructor, không cần DTO class thực sự.
