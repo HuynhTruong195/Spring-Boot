@@ -340,3 +340,362 @@ Với Maven:
 Maven sẽ tự động tải các thư viện liên quan về project của bạn
 Với Gradle:
     Tương tự, nhưng khai báo trong file build.gradle    
+
+
+
+
+
+
+💾💾💾💾💾💾💾💾💾💾💾💾 💾💾💾💾💾💾💾💾💾💾💾💾 
+
+    Spring Data JPA
+
+🔑 Điểm chính:
+ Spring Data JPA là một module trong hệ sinh thái Spring Data, được xây dựng trên nền JPA (Java Persistence API), giúp đơn giản hóa các thao tác với cơ sở dữ liệu
+Nó không thay thế JPA, mà cung cấp thêm tầng trừu tượng cao hơn để giảm code boilerplate và tăng tốc phát triển
+
+
+✅ Các thành phần liên quan
+ JPA (chuẩn Java)
+    API chuẩn để quản lý entity và ánh xạ object ↔ table
+Hibernate
+    Một trong những triển khai phổ biến nhất của JPA
+Spring Data JPA
+    Hỗ trợ tương tác với JPA dễ dàng hơn qua Repository
+
+✅ Lợi ích của Spring Data JPA
+    Không cần viết SQL cho các truy vấn đơn giản
+    Tự sinh các hàm như save(), findById(), findAll()
+    Hỗ trợ phân trang, sắp xếp, query động
+    Tích hợp dễ dàng với Spring Boot
+
+💡 Ví dụ:
+
+@Entity
+public class User{
+    @Id
+    @GeneratedValue
+    private Long id;
+    
+    private String username;
+    private String email;
+}
+#Repository
+    public interface UserRepository extends JpaRepository<User, Long> {
+        List<User> findByName(String name);
+    }
+👉 Chỉ cần kế thừa JpaRepository, bạn đã có sẵn đầy đủ các phương thức CRUD
+
+
+✅ Các interface quan trọng
+CrudRepository<T, ID>
+    Các hàm cơ bản: save, findById, delete
+
+PagingAndSortingRepository<T, ID>
+    Hỗ trợ thêm phân trang và sắp xếp
+
+JpaRepository<T, ID>
+    Mở rộng cả hai interface trên + thêm các hàm tiện ích khác
+
+JpaSpecificationExecutor<T>
+    Hỗ trợ viết query động theo điều kiện (Specification)
+
+⚙️ Cơ chế sinh truy vấn tự động
+Khi bạn viết một method trong Repository, Spring sẽ đọc tên method rồi dịch sang query SQL/JPQL.
+Ví dụ:
+    List<User> findByName(String name);
+Spring sẽ tự hiểu là: SELECT u FROM User u WHERE u.name = :name
+
+✅Quy tắc đặt tên (Method Name Keywords)
+Một số từ khóa đặc biệt trong tên method sẽ được Spring hiểu để sinh query:
+
+    findBy, readBy, getBy → tìm kiếm
+
+    And, Or → nối nhiều điều kiện
+
+    Between, LessThan, GreaterThan → so sánh
+
+    Like, Containing, StartingWith, EndingWith → tìm kiếm theo mẫu
+
+    OrderBy → sắp xếp
+
+👉 Ví dụ:    
+
+    // Repository kế thừa JpaRepository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Spring sẽ tự sinh ra query: SELECT u FROM User u WHERE u.age > :age
+    List<User> findByAgeGreaterThan(int age);
+
+    // SELECT u FROM User u WHERE u.name LIKE %:keyword%
+    List<User> findByNameContaining(String keyword);
+
+    // SELECT u FROM User u WHERE u.name = :name OR u.email = :email
+    List<User> findByNameOrEmail(String name, String email);
+}
+
+        
+✅Custom query khi cần:
+Nếu tên method không đáp ứng đủ, bạn có thể:
+Dùng annotation @Query (JPQL hoặc native SQL).
+    @Query("SELECT u FROM User u WHERE u.email = ?1")
+    User findByEmail(String email);
+
+
+📝 Các cách viết truy vấn trong Spring Data JPA    
+
+Method Name Query → ít code, chỉ cần đặt tên đúng quy tắc.
+
+@Query → viết tay khi query phức tạp.
+
+Specification → dùng khi filter nhiều điều kiện, build query động.
+
+Projection → tối ưu khi không cần toàn bộ dữ liệu entity.
+
+👉@Query (JPQL hoặc Native SQL)
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // JPQL (sử dụng tên entity và field, không phải tên bảng/column DB)
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    User findByEmailJPQL(@Param("email") String email);
+
+    // Native SQL (viết đúng theo tên bảng và cột trong DB)
+    @Query(value = "SELECT * FROM users WHERE email = :email", nativeQuery = true)
+    User findByEmailNative(@Param("email") String email);
+}
+
+. Specification (truy vấn động theo điều kiện)
+// Tạo class chứa các điều kiện query động
+public class UserSpecifications {
+
+    // Điều kiện: tên bằng name
+    public static Specification<User> hasName(String name) {
+        // root: đại diện cho entity User
+        // query: câu query tổng thể
+        // cb: CriteriaBuilder để build điều kiện
+        return (root, query, cb) -> cb.equal(root.get("name"), name);
+    }
+
+    // Điều kiện: tuổi lớn hơn age
+    public static Specification<User> ageGreaterThan(int age) {
+        return (root, query, cb) -> cb.greaterThan(root.get("age"), age);
+    }
+}
+
+// Sử dụng trong Repository
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+}
+
+// Gọi trong Service
+List<User> results = userRepository.findAll(
+    Specification.where(UserSpecifications.hasName("Nam"))
+                 .and(UserSpecifications.ageGreaterThan(20))
+);
+
+
+👉. Projection (trả về một phần dữ liệu)
+
+// Interface projection: chỉ lấy ra 2 field (id và name)
+public interface UserSummary {
+    Long getId();   // lấy id
+    String getName(); // lấy name
+}
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Spring sẽ chỉ map dữ liệu vào UserSummary, không lấy toàn bộ entity User
+    List<UserSummary> findBy();
+}
+
+// Gọi ra chỉ nhận được dữ liệu gọn nhẹ hơn
+for(UserSummary u : userRepository.findBy()) {
+    System.out.println(u.getId() + " - " + u.getName());
+}
+
+
+
+📌Toán tử nối điều kiện
+
+
+
+And
+
+   👉 AND logic
+
+Or
+
+   👉 OR logic
+
+Between
+
+   👉 Trong khoảng
+
+LessThan / GreaterThan
+
+   👉 Nhỏ hơn / Lớn hơn
+
+Like / Containing
+
+   👉 Giống chuỗi / chứa chuỗi
+
+IsNull / IsNotNull
+
+   👉 Kiểm tra NULL hoặc không NULL
+
+In
+
+    👉Tồn tại trong danh sách
+
+List<User> findByAgeGreaterThanAndStatus(Integer age, String status);
+List<User> findyEmailContaining(String keyword);
+
+
+
+📌Sắp xếp và phân trang
+
+    Spring Data JPA hỗ trợ Sort và Pageable:
+ List<User> findByStatus(String status, Sort sort);
+ Page<User> findByRole(String role, Pageable pageable);
+
+
+
+📌Một số ví dụ thực tế
+
+List<Product> findByPriceBetween(BigDecimal min, BigDecimal max);
+List<User> findByEmailLike(String emailPattern);
+Optional<User> findByUsernameAndPassword(String username, String password);
+
+
+🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠
+
+Custom Query với @Query
+
+🔹 1. @Query với JPQL (Java Persistence Query Language)
+
+    JPQL dùng tên entity và field trong class Java (không phải tên bảng/column trong DB).
+    Giúp viết query độc lập với loại DB.
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Lấy user theo email (dùng JPQL)
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    User findByEmail(@Param("email") String email);
+
+    // Lấy user theo tên gần đúng (LIKE)
+    @Query("SELECT u FROM User u WHERE u.name LIKE %:name%")
+    List<User> searchByName(@Param("name") String name);
+
+    // Lấy user theo tuổi > ?1 (tham số theo vị trí)
+    @Query("SELECT u FROM User u WHERE u.age > ?1")
+    List<User> findOlderThan(int age);
+}
+
+
+🔹 2. @Query với Native SQL
+
+    Dùng khi muốn viết SQL thuần theo đúng tên bảng/cột trong DB.
+    Phù hợp cho query phức tạp, join nhiều bảng.
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Native SQL: Lấy user theo email
+    @Query(value = "SELECT * FROM users WHERE email = :email", nativeQuery = true)
+    User findByEmailNative(@Param("email") String email);
+
+    // Native SQL: Lấy tất cả user có tuổi trong khoảng
+    @Query(value = "SELECT * FROM users WHERE age BETWEEN :min AND :max", nativeQuery = true)
+    List<User> findUsersBetweenAges(@Param("min") int min, @Param("max") int max);
+}
+
+
+🔹 3. @Query với Update/Delete
+
+    Khi muốn cập nhật hoặc xóa dữ liệu, cần dùng @Modifying và @Transactional.
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Cập nhật tên user theo id
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.name = :name WHERE u.id = :id")
+    int updateUserName(@Param("id") Long id, @Param("name") String name);
+
+    // Xóa user theo email
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM User u WHERE u.email = :email")
+    int deleteByEmail(@Param("email") String email);
+
+    //tìm kiếm theo email
+    @Query("SELECT Count(u)>0 FROM User u WHERE u.email= :email")
+    Boolean existByEmail(@Param("mail") String mail)
+    -> trả về true or false 
+    . nếu lớn hơn 0 tức tồn tại-> true
+
+    CÓ THỂ DÙNG THAM SỐ ?1, ?2
+
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.email = ?1")
+    Boolean existsByEmail(String email);
+
+}
+
+
+🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠
+Paging và Sorting trong Spring Data JPA
+
+1️⃣ Paging (Phân trang)
+
+Trong Spring Data JPA, bạn có thể truyền vào tham số kiểu Pageable để lấy dữ liệu theo trang.
+
+Ví dụ:
+    public interface UserRepository extends JpaRepository<User, Long> {
+
+        // Trả về Page<User> thay vì List<User>
+        Page<User> findByAgeGreaterThan(int age, Pageable pageable);
+    }
+
+
+Sử dụng trong Service/Controller:
+   // Page số 0 (trang đầu), size = 5 tức có 5 phần tử 1 trang
+Pageable pageable = PageRequest.of(0, 5);
+
+// Gọi repo -> trả về 5 User có age > 18
+Page<User> page = userRepository.findByAgeGreaterThan(18, pageable);
+
+// Lấy dữ liệu
+List<User> users = page.getContent();
+int totalPages = page.getTotalPages();
+long totalElements = page.getTotalElements();
+👉 Pageable sẽ tự động sinh ra SQL có LIMIT và OFFSET.
+
+
+2️⃣ Sorting (Sắp xếp)
+
+Có thể sắp xếp bằng Sort hoặc kết hợp trong Pageable.
+
+Ví dụ Sort riêng:
+// Sắp xếp theo tên tăng dần
+List<User> users = userRepository.findAll(Sort.by("name"));
+
+// Sắp xếp theo tuổi giảm dần
+List<User> users = userRepository.findAll(Sort.by(Sort.Direction.DESC, "age"));
+
+
+
+3️⃣ Kết hợp Paging + Sorting
+
+// Page số 0, size = 10, sắp xếp theo tuổi giảm dần
+Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "age"));
+
+Page<User> page = userRepository.findAll(pageable);
+
+👉 SQL sinh ra (ví dụ MySQL): 
+SELECT * FROM users ORDER BY age DESC LIMIT 10 OFFSET 0;
+
+
+
+4️⃣ Khi nào dùng Page vs Slice
+
+Page<T>: có đầy đủ info (total elements, total pages, số trang hiện tại, …) → dùng khi bạn cần hiển thị phân trang chuẩn (ví dụ web show tổng số trang).
+
+Slice<T>: chỉ biết có còn trang tiếp theo hay không (hasNext()) → nhẹ hơn, dùng khi chỉ cần load-more (infinite scroll).
