@@ -769,3 +769,374 @@ Spring tự generate class ẩn implementing UserNameEmail.
 Khi query findByActiveTrue() → trả về list các object có getName() và getEmail().
 
 Không cần constructor, không cần DTO class thực sự.
+
+
+🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐
+
+    Web Service là một dịch vụ chạy trên internet, cho phép các ứng dụng khác nhau 
+    (có thể viết bằng ngôn ngữ khác nhau, chạy trên hệ điều hành khác nhau) 
+    giao tiếp và trao đổi dữ liệu với nhau.
+
+    Nó giống như một “cầu nối” giúp phần mềm này nói chuyện với phần mềm khác qua mạng.
+
+🔑 Đặc điểm chính
+
+    Giao tiếp qua Internet (thường qua HTTP/HTTPS).
+
+    Ngôn ngữ lập trình không quan trọng → Java, .NET, Python… đều dùng chung được.
+
+    Trao đổi dữ liệu chuẩn → thường dùng XML, JSON.
+
+   Dễ tích hợp bên thứ ba (ví dụ: thanh toán qua Momo, ZaloPay, hoặc Google Maps API)   
+
+🛠️ Các loại Web Service phổ biến
+
+✅SOAP Web Service → dùng XML, chuẩn mực nhưng hơi phức tạp.
+        SOAP (Simple Object Access Protocol)
+        Dùng XML để trao đổi dữ liệu
+        Có cấu trúc chặt chẽ, tuân thủ các tiêu chuẩn (WSDL, XML Schema, ...)
+        Hơi nặng và phức tạp hơn REST
+        Dùng nhiều trong môi trường doanh nghiệp (Enterprise)
+
+✅RESTful Web Service (REST API) → dùng JSON, đơn giản, nhanh, hiện nay rất phổ biến.
+        RESTful Web Service (Representational State Transfer)
+        Sử dụng các phương thức HTTP: GET, POST, PUT, DELETE
+        Dữ liệu thường trao đổi qua JSON hoặc XML
+        Nhẹ, dễ xây dựng, dễ dùng
+        Được dùng phổ biến hiện nay
+
+✅Thành phần chính của một RESTful Web Service
+
+URL/Endpoint
+
+    Địa chỉ truy cập dịch vụ. VD: /api/users/1
+
+HTTP Method
+
+    Xác định hành động: GET, POST, PUT, DELETE
+
+Request
+
+    Dữ liệu gửi lên từ client
+
+Response
+
+    Dữ liệu trả về từ server (thường là JSON)
+
+Status Code
+
+    Mã phản hồi: 200 (OK), 404 (Not Found), 500 (Error), ... 
+    
+    
+    
+✅Web Service khác API chỗ nào?
+    Web Service là một loại của API
+    API (Application Programming Interface) là giao diện chung, có thể dùng không qua web (ví dụ: trong Java, C++)
+    Web Service luôn hoạt động qua HTTP/HTTPS, còn API thì không nhất thiết
+
+✅Các công nghệ thường dùng để tạo Web Service
+    Java: Spring Boot (REST), JAX-RS (REST), JAX-WS (SOAP)
+    .NET: ASP.NET Web API
+    Node.js: Express
+    Python: Flask, Django REST Framework
+ 
+
+✅Ưu điểm của Web Service
+    Giao tiếp đa nền tảng
+    Dễ mở rộng, bảo trì
+    Tái sử dụng dịch vụ
+    Dễ tích hợp với bên ngoài
+ 
+
+✅Nhược điểm
+    Phụ thuộc vào kết nối mạng
+    Bảo mật phức tạp hơn
+    Độ trễ cao hơn so với gọi hàm nội bộ
+
+⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️⚔️
+
+⚔️ SOAP vs REST
+
+🔹 SOAP (Simple Object Access Protocol)
+
+    Định dạng dữ liệu: Chủ yếu dùng XML.
+
+    Chuẩn mực, nghiêm ngặt (có quy tắc rõ ràng).
+
+    Hỗ trợ bảo mật tốt (WS-Security, giao dịch...).
+
+    Nặng hơn, phức tạp hơn → tốc độ chậm hơn.
+
+    Thường dùng trong hệ thống lớn, tài chính, ngân hàng.
+
+🔹 REST (Representational State Transfer)
+
+    Định dạng dữ liệu: thường dùng JSON (nhẹ, dễ đọc), cũng có thể dùng XML.
+
+    Đơn giản, linh hoạt, dễ học.
+
+    Nhanh, nhẹ → phù hợp web và mobile.
+
+    Chủ yếu dùng các HTTP method: GET, POST, PUT, DELETE.
+
+    Được dùng rộng rãi hiện nay (API Facebook, Google, Zalo...).
+
+📌 Tóm tắt dễ nhớ
+
+    SOAP = nghiêm ngặt, phức tạp, dùng cho môi trường yêu cầu cao (ngân hàng, bảo mật).
+
+    REST = đơn giản, nhanh, phổ biến, dùng nhiều trong web/mobile.
+
+🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐
+Nguyên lý hoạt động của RESTful API
+
+REST là gì?
+    REST (Representational State Transfer) là một kiến trúc phần mềm 
+    dùng để thiết kế các dịch vụ web nhẹ, linh hoạt, đơn giản và hiệu quả – thường gọi là RESTful Web Services
+ 
+
+RESTful API là gì?
+    RESTful API là một giao diện lập trình ứng dụng tuân theo nguyên tắc REST, 
+    cho phép các client (web, mobile, hệ thống khác) truy cập và thao tác tài nguyên trên server thông qua HTTP
+
+
+📌Các nguyên lý chính của RESTful
+🔹Stateless (Không trạng thái)
+    Mỗi request từ client đến server độc lập, không lưu trạng thái
+    Server không nhớ thông tin từ request trước đó
+ 
+
+🔹Client – Server
+    REST phân chia rõ giữa client và server
+    Client không cần biết logic xử lý bên server
+    Giúp tách biệt giao diện (frontend) và xử lý dữ liệu (backend)
+    
+
+🔹Uniform Interface (Giao diện đồng nhất)
+    Sử dụng các phương thức HTTP tiêu chuẩn: GET, POST, PUT, DELETE
+    Tài nguyên được định danh bằng URL
+    Tất cả tài nguyên đều truy cập theo một kiểu nhất quán
+    
+
+🔹Resource-Based (Dựa trên tài nguyên)
+    Mỗi tài nguyên (user, product, order,...) có một URL duy nhất
+    Ví dụ: /api/products/1 đại diện cho sản phẩm có ID = 1
+ 
+
+🔹Representation
+    Tài nguyên có thể được đại diện dưới nhiều định dạng: JSON, XML (JSON phổ biến hơn)
+    Client gửi request, server trả về đại diện (representation) của tài nguyên
+ 
+
+🔹Cacheable
+    Phản hồi từ server có thể được cache, giúp cải thiện hiệu suất
+ 
+
+🌐 RESTful API hoạt động như thế nào?
+
+    RESTful API hoạt động dựa trên giao thức HTTP (giống như khi bạn lướt web).
+
+    Client (ứng dụng, website, mobile app) gửi request đến API.
+
+    Server (nơi có dữ liệu/dịch vụ) nhận request → xử lý → trả về response (thường là JSON).
+
+🔑 4 nguyên lý chính (CRUD qua HTTP method)
+
+RESTful API gắn chức năng CRUD (Create, Read, Update, Delete) với HTTP methods:
+
+HTTP        Method	Chức năng	        Ví dụ (URL = resource)
+GET	        Lấy dữ liệu (Read)	        GET /users → lấy danh sách user
+POST	Thêm dữ liệu mới (Create)	    POST /users → thêm user mới
+PUT/PATCH	Cập nhật dữ liệu (Update)	    PUT /users/1 → sửa user có id=1
+DELETE	    Xóa dữ liệu (Delete)	    DELETE /users/1 → xóa user có id=1
+
+📌 Ví dụ minh họa
+
+    Giả sử bạn có REST API quản lý user:
+
+    GET /users → server trả danh sách user (JSON).
+
+    GET /users/1 → server trả thông tin user có id = 1.
+
+    POST /users (kèm dữ liệu JSON) → tạo user mới.
+
+    PUT /users/1 → cập nhật user id=1.
+
+    DELETE /users/1 → xóa user id=1.
+
+👉 Tóm lại:
+RESTful API = dùng URL để chỉ tài nguyên, HTTP method để thao tác, dữ liệu thường trả về JSON → đơn giản, nhanh, dễ tích hợp.    
+
+🏗️🏗️🏗️🏗️🏗️🏗️🏗️🏗️🏗️🏗️🏗️🏗️🏗️🏗️
+TRONG MVC VÀ KHI VIẾT RESTful API
+
+    🏗️ Controller “bình thường”
+
+    @GetMapping("/users")
+    public String getUsers(Model model) {
+        // xử lý, trả về view (HTML, JSP, Thymeleaf...)
+    }
+
+    🌐 RESTful Controller
+
+    Còn khi viết REST API, bạn thường dùng @RestController và các method GET, POST, PUT, DELETE để xử lý request.
+
+    @RestController
+    @RequestMapping("/users")
+    public class UserController {
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAll(); // trả JSON
+    }
+
+    @PostMapping
+    public User createUser(@RequestBody User user) {
+        return userService.save(user); // trả JSON
+    }
+
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable int id, @RequestBody User user) {
+        return userService.update(id, user); // trả JSON
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable int id) {
+        userService.delete(id);
+    }
+}
+
+👉 Ở đây:
+
+    GET /users → lấy danh sách user
+
+    POST /users → thêm user mới
+
+    PUT /users/{id} → cập nhật user
+
+    DELETE /users/{id} → xóa user
+
+🔑 Các HTTP Methods trong RESTful API
+
+GET
+
+    📌 Mục đích: Lấy dữ liệu từ server.
+
+    🛠️ Ví dụ: GET /users → lấy danh sách user.
+
+    ✅ Đặc điểm: Không làm thay đổi dữ liệu (idempotent), có thể cache.
+
+POST
+
+    📌 Mục đích: Gửi dữ liệu mới lên server (tạo mới).
+
+    🛠️ Ví dụ: POST /users (kèm JSON { "name": "Nam" }) → tạo user mới.
+
+    ⚠️ Đặc điểm: Thay đổi dữ liệu, không idempotent (gửi 2 lần có thể tạo 2 bản ghi).
+
+PUT
+
+    📌 Mục đích: Cập nhật dữ liệu (thay thế toàn bộ).
+
+    🛠️ Ví dụ: PUT /users/1 (kèm JSON) → cập nhật user có id=1.
+
+    ✅ Đặc điểm: Idempotent (gửi nhiều lần kết quả vẫn như 1 lần).
+
+DELETE
+
+    📌 Mục đích: Xóa dữ liệu.
+
+    🛠️ Ví dụ: DELETE /users/1 → xóa user id=1.
+
+    ✅ Đặc điểm: Idempotent (xóa nhiều lần thì kết quả cuối cùng vẫn là đã xóa).
+
+👉 Tóm lại dễ nhớ:
+
+    GET = lấy dữ liệu
+
+    POST = thêm mới
+
+    PUT = cập nhật
+
+    DELETE = xóa
+
+
+    🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐🌐
+🌐 JSON và XML trong RESTful API
+
+Trong RESTful API, dữ liệu được trao đổi giữa client (ứng dụng, trình duyệt, mobile app) và server thông qua giao thức HTTP
+
+Hai định dạng phổ biến nhất để biểu diễn dữ liệu là:
+
+    JSON (JavaScript Object Notation)
+
+    XML (eXtensible Markup Language)
+
+🔹 JSON (JavaScript Object Notation)
+
+    Dữ liệu dạng cặp key–value (giống object trong JS).
+
+    Gọn, nhẹ, dễ đọc, dễ parse.
+
+    Rất phổ biến trong RESTful API hiện nay.   
+📌 Ví dụ:
+    {
+    "id": 1,
+    "name": "Nam",
+    "email": "nam@example.com"
+    }
+
+🔹 XML (eXtensible Markup Language)
+
+    Dữ liệu dạng thẻ mở/đóng giống HTML.
+
+    Nặng hơn, dài dòng hơn, nhưng có tính năng schema, namespace.
+
+    Từng phổ biến, giờ ít dùng trong REST (chủ yếu trong SOAP).
+
+📌 Ví dụ:
+    <User>
+        <id>1</id>
+        <name>Nam</name>
+        <email>nam@example.com</email>
+    </User>
+
+🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️
+
+Các công cụ kiểm thử API (Postman, Swagger)
+
+🛠️ 1. Postman
+
+    Là ứng dụng chuyên để test API (REST, SOAP, GraphQL...).
+
+    Cho phép bạn:
+
+    Gửi request (GET, POST, PUT, DELETE…) đến API.
+
+    Xem response (JSON, XML…).
+
+    Lưu bộ sưu tập API để test lại sau.
+
+    Tích hợp test tự động, tạo script kiểm thử.
+
+    👉 Thường dùng khi dev muốn test API thủ công.
+
+📌 Ví dụ: Bạn nhập URL http://localhost:8080/users, chọn method GET, nhấn Send → Postman sẽ trả về danh sách user ở dạng JSON.
+
+🛠️ 2. Swagger (nay gọi là OpenAPI)
+
+    Là bộ công cụ để mô tả và tài liệu hóa API.
+
+    Tích hợp trực tiếp với code → tự động tạo tài liệu API.
+
+    Giao diện web của Swagger cho phép:
+
+    Xem danh sách tất cả các API (endpoint).
+
+    Thấy rõ method (GET/POST/PUT/DELETE), input, output.
+
+    Test API ngay trên giao diện mà không cần cài thêm gì.
+
+    👉 Thường dùng để tài liệu hóa API cho team, cho client.
+
+📌 Ví dụ: Bạn vào http://localhost:8080/swagger-ui.html → thấy ngay danh sách API /users, /products → bấm thử Try it out để test.
