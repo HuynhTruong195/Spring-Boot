@@ -1140,3 +1140,94 @@ Các công cụ kiểm thử API (Postman, Swagger)
     👉 Thường dùng để tài liệu hóa API cho team, cho client.
 
 📌 Ví dụ: Bạn vào http://localhost:8080/swagger-ui.html → thấy ngay danh sách API /users, /products → bấm thử Try it out để test.
+
+
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+HTTP Request và Response 
+
+1. HTTP REQUEST (Yêu cầu từ Client)
+🔹 Cấu trúc HTTP Request
+    [METHOD] [URL] [HTTP_VERSION]
+    [HEADERS]
+
+    [BODY] (tùy chọn)
+🔹 Các thành phần chính:
+A. HTTP Methods (Phương thức)
+
+Method      Mục đích        Có Body?         Ví dụ
+GET         Lấy dữ liệu      ❌Không        Xem danh sách sản phẩm   
+POST        Tạo mới            ✅ Có       Thêm sản phẩm mới
+PUT         Cập nhật toàn bộ    ✅ Có       Sửa thông tin sản phẩm
+PATCH       Cập nhật một phần   ✅ Có       Cập nhật giá sản phẩm
+DELETE          Xóa             ❌ Không        Xóa sản phẩm
+
+B. URL (Uniform Resource Locator)
+https://api.example.com/products/123?category=electronics&sort=price
+│       │               │        │   │
+└─scheme └─host          └─path   └─query parameters
+
+C. Headers (Tiêu đề)
+
+    Chứa thông tin metadata về request
+
+    httpContent-Type: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    Accept: application/json
+    User-Agent: Mozilla/5.0...
+
+D. Body (Thân request)
+
+Chứa dữ liệu gửi lên server (chỉ có ở POST, PUT, PATCH)
+
+    {
+        "name": "iPhone 15",
+        "price": 999.99,
+        "category": "electronics"
+    }
+
+🔹 Ví dụ HTTP Request hoàn chỉnh:
+GET Request (Không có body):
+    GET /api/products?category=electronics HTTP/1.1
+    Host: api.example.com
+    Accept: application/json
+    Authorization: Bearer token123
+
+POST Request (Có body):
+    POST /api/products HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+Authorization: Bearer token123
+
+    {
+        "name": "MacBook Pro",
+        "price": 1999.99,
+        "category": "computers"
+    }
+
+
+
+2. HTTP RESPONSE (Phản hồi từ Server)
+
+🔹 Cấu trúc HTTP Response
+    [HTTP_VERSION] [STATUS_CODE] [STATUS_TEXT]
+    [HEADERS]
+
+    [BODY] (tùy chọn)
+🔹 Các thành phần chính:
+A. Status Codes (Mã trạng thái)
+Nhóm        Ý nghĩa     Ví dụ phổ biến
+2xx     ✅ Thành công    200 OK,01 Created
+3xx     🔄 Chuyển hướng     301 Moved Permanently
+4xx     ❌ Lỗi từ Client        400 Bad Request, 404 Not Found
+5xx     💥 Lỗi từ Server        500 Internal Server Error
+
+
+Status codes quan trọng:
+
+    200 OK: Thành công
+    201 Created: Tạo mới thành công
+    400 Bad Request: Dữ liệu không hợp lệ
+    401 Unauthorized: Chưa đăng nhập
+    403 Forbidden: Không có quyền truy cập
+    404 Not Found: Không tìm thấy resource
+    500 Internal Server Error: Lỗi server
